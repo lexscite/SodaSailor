@@ -1,17 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-[RequireComponent(typeof(LineRenderer))]
 public class Water : MonoBehaviour
 {
-    [Header("Mesh")]
+    [Header("Mesh Generation")]
     [SerializeField]
-    protected float _width = 10f;
-    [SerializeField]
-    protected float _depth = -10f;
-    [SerializeField]
-    protected int _polygonsCount = 20;
+    protected Canvas _uiCanvas;
 
     [Header("Waves")]
     [SerializeField]
@@ -23,30 +19,41 @@ public class Water : MonoBehaviour
 
     [Header("Snapping")]
     [SerializeField]
-    protected int _snapPointIndex;
+    protected GameObject _snapTarget;
     [SerializeField]
-    protected GameObject _snappingObject;
-    [SerializeField]
-    protected bool _snapRotation;
+    [Range(0, 1)]
+    protected float _snapPosition;
 
     protected MeshFilter _meshFilter;
     protected Mesh _mesh;
-    protected LineRenderer _lineRenderer;
 
     protected int _stepCounter;
 
-    protected void Awake()
+    protected float _left;
+    protected float _width;
+    protected float _bottom;
+
+    protected List<int> _surfaceIndices;
+    protected List<int> _bottomIndices;
+
+    protected void Start()
     {
         _meshFilter = GetComponent<MeshFilter>();
         _meshFilter.sharedMesh = new Mesh();
         _mesh = _meshFilter.sharedMesh;
-        _lineRenderer = GetComponent<LineRenderer>();
         GenerateMesh();
+
+        Debug.Log(_surfaceIndices);
     }
 
     protected void Update()
     {
         UpdateMesh();
+
+        if (_snapTarget)
+        {
+            UpdateSnapTarget();
+        }
     }
 
     protected void UpdateMesh()
@@ -54,51 +61,73 @@ public class Water : MonoBehaviour
         _stepCounter++;
         var vertices = _mesh.vertices;
 
-        for (var i = 0; i < vertices.Length; i++)
+        foreach (int i in _surfaceIndices)
         {
-            if (System.Math.Abs(vertices[i].y - _depth) > float.Epsilon)
-            {
-                var x = vertices[i].x;
-                vertices[i].y = Mathf.Cos((x + _waveSpeed * _stepCounter) * _waveFrequency) * _waveHeight;
-            }
+            var x = vertices[i].x;
+            vertices[i].y = GetYVertexPositionByX(x);
         }
 
         _mesh.vertices = vertices;
     }
 
+    protected void UpdateSnapTarget()
+    {
+        var targetTransform = _snapTarget.transform;
+        var targetPosition = targetTransform.position;
+        targetPosition.x = _left + _width * _snapPosition;
+        targetPosition.y = GetYVertexPositionByX(targetPosition.x) + transform.position.y;
+        targetTransform.position = targetPosition;
+    }
+
+    protected float GetYVertexPositionByX(float x)
+    {
+        return Mathf.Cos((x + _waveSpeed * _stepCounter) * _waveFrequency) * _waveHeight;
+    }
+
     protected void GenerateMesh()
     {
-        var left = -_width / 2;
-        int nodecount = _polygonsCount + 1;
-        _lineRenderer.positionCount = nodecount;
-        _lineRenderer.startWidth = 0.1f;
-        _lineRenderer.endWidth = 0.1f;
+        var uiCanvasRectTransform = _uiCanvas.GetComponent<RectTransform>();
+        Vector3[] uiCanvasCorners = new Vector3[4];
+        uiCanvasRectTransform.GetWorldCorners(uiCanvasCorners);
 
+        _left = uiCanvasCorners[0].x;
+        _width = uiCanvasCorners[3].x - _left;
+        _bottom = uiCanvasCorners[0].y - transform.position.y;
+
+        var polygonsCount = Mathf.FloorToInt(_width * 2);
+        var nodecount = polygonsCount + 1;
         var positions = new Vector3[nodecount];
 
         for (int i = 0; i < nodecount; i++)
         {
-            var x = left + _width * i / _polygonsCount;
+            var x = _left + _width * i / polygonsCount;
             var y = Mathf.Cos(x * _waveFrequency) * _waveHeight;
             positions[i] = new Vector3(x, y, transform.position.z);
-            _lineRenderer.SetPosition(i, positions[i]);
         }
 
-        Vector3[] vertices = new Vector3[_polygonsCount * 4];
-        Vector2[] uvs = new Vector2[_polygonsCount * 4];
-        int[] triangles = new int[_polygonsCount * 6];
+        Vector3[] vertices = new Vector3[polygonsCount * 4];
+        Vector2[] uvs = new Vector2[polygonsCount * 4];
+        int[] triangles = new int[polygonsCount * 6];
 
-        for (int i = 0, vi = 0, ti = 0; i < _polygonsCount; i++, vi += 4, ti += 6)
+        _surfaceIndices = new List<int>();
+        _bottomIndices = new List<int>();
+
+        for (int i = 0, vi = 0, ti = 0; i < polygonsCount; i++, vi += 4, ti += 6)
         {
+            _surfaceIndices.Add(vi);
+            _surfaceIndices.Add(vi + 1);
+            _bottomIndices.Add(vi + 2);
+            _bottomIndices.Add(vi + 3);
+
             vertices[vi] = positions[i];
             vertices[vi + 1] = positions[i + 1];
-            vertices[vi + 2] = new Vector3(positions[i].x, _depth, positions[i].z);
-            vertices[vi + 3] = new Vector3(positions[i + 1].x, _depth, positions[i + 1].z);
+            vertices[vi + 2] = new Vector3(positions[i].x, _bottom, positions[i].z);
+            vertices[vi + 3] = new Vector3(positions[i + 1].x, _bottom, positions[i + 1].z);
 
-            uvs[vi] = new Vector2(1f / _polygonsCount * i, 1);
-            uvs[vi + 1] = new Vector2(1f / _polygonsCount * (i + 1), 1);
-            uvs[vi + 2] = new Vector2(1f / _polygonsCount * i, 0);
-            uvs[vi + 3] = new Vector2(1f / _polygonsCount * (i + 1), 0);
+            uvs[vi] = new Vector2(1f / polygonsCount * i, 1);
+            uvs[vi + 1] = new Vector2(1f / polygonsCount * (i + 1), 1);
+            uvs[vi + 2] = new Vector2(1f / polygonsCount * i, 0);
+            uvs[vi + 3] = new Vector2(1f / polygonsCount * (i + 1), 0);
 
             triangles[ti] = vi;
             triangles[ti + 1] = vi + 1;
@@ -111,5 +140,6 @@ public class Water : MonoBehaviour
         _mesh.vertices = vertices;
         _mesh.uv = uvs;
         _mesh.triangles = triangles;
+        _mesh.name = "Water";
     }
 }
