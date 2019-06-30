@@ -8,14 +8,19 @@ public class Water : MonoBehaviour
     [Header("Mesh Generation")]
     [SerializeField]
     protected Canvas _uiCanvas;
+    [SerializeField]
+    protected int _polygonsCountMultiplier = 2;
 
     [Header("Waves")]
     [SerializeField]
+    [Range(.0001f, 1)]
     protected float _waveFrequency = 1;
     [SerializeField]
+    [Range(0, 1)]
     protected float _waveHeight = .2f;
     [SerializeField]
-    protected float _waveSpeed = .01f;
+    [Range(1, 1000)]
+    protected int _steps = 10;
 
     [Header("Snapping")]
     [SerializeField]
@@ -32,6 +37,7 @@ public class Water : MonoBehaviour
     protected float _left;
     protected float _width;
     protected float _bottom;
+    protected float _step;
 
     protected List<int> _surfaceIndices;
     protected List<int> _bottomIndices;
@@ -42,8 +48,6 @@ public class Water : MonoBehaviour
         _meshFilter.sharedMesh = new Mesh();
         _mesh = _meshFilter.sharedMesh;
         GenerateMesh();
-
-        Debug.Log(_surfaceIndices);
     }
 
     protected void Update()
@@ -59,6 +63,8 @@ public class Water : MonoBehaviour
     protected void UpdateMesh()
     {
         _stepCounter++;
+        _step = 2 * Mathf.PI / _waveFrequency / _steps;
+
         var vertices = _mesh.vertices;
 
         foreach (int i in _surfaceIndices)
@@ -68,6 +74,11 @@ public class Water : MonoBehaviour
         }
 
         _mesh.vertices = vertices;
+
+        if (_stepCounter == _steps)
+        {
+            _stepCounter = 0;
+        }
     }
 
     protected void UpdateSnapTarget()
@@ -81,7 +92,7 @@ public class Water : MonoBehaviour
 
     protected float GetYVertexPositionByX(float x)
     {
-        return Mathf.Cos((x + _waveSpeed * _stepCounter) * _waveFrequency) * _waveHeight;
+        return Mathf.Cos((x + _step * _stepCounter) * _waveFrequency) * _waveHeight;
     }
 
     protected void GenerateMesh()
@@ -94,7 +105,7 @@ public class Water : MonoBehaviour
         _width = uiCanvasCorners[3].x - _left;
         _bottom = uiCanvasCorners[0].y - transform.position.y;
 
-        var polygonsCount = Mathf.FloorToInt(_width * 2);
+        var polygonsCount = Mathf.FloorToInt(_width * _polygonsCountMultiplier);
         var nodecount = polygonsCount + 1;
         var positions = new Vector3[nodecount];
 
