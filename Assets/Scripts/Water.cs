@@ -21,6 +21,8 @@ public class Water : MonoBehaviour
     [SerializeField]
     [Range(1, 1000)]
     protected int _steps = 10;
+    [SerializeField]
+    protected bool _movingMaterial;
 
     [Header("Snapping")]
     [SerializeField]
@@ -28,8 +30,11 @@ public class Water : MonoBehaviour
     [SerializeField]
     [Range(0, 1)]
     protected float _snapPosition;
+    [SerializeField]
+    protected float _yOffset;
 
     protected MeshFilter _meshFilter;
+    protected MeshRenderer _meshRenderer;
     protected Mesh _mesh;
 
     protected int _stepCounter;
@@ -39,19 +44,42 @@ public class Water : MonoBehaviour
     protected float _bottom;
     protected float _step;
 
-    protected List<int> _surfaceIndices;
-    protected List<int> _bottomIndices;
+    protected List<int> _surfaceIndices = new List<int>();
+    protected List<int> _bottomIndices = new List<int>();
 
-    protected void Start()
+#if UNITY_EDITOR
+    private Vector2 _resolution;
+#endif //UNITY_EDITOR
+
+    protected void Awake()
     {
+#if UNITY_EDITOR
+        _resolution = new Vector2(Screen.width, Screen.height);
+#endif //UNITY_EDITOR
+
         _meshFilter = GetComponent<MeshFilter>();
         _meshFilter.sharedMesh = new Mesh();
         _mesh = _meshFilter.sharedMesh;
+        _mesh.name = "Water";
+        _meshRenderer = GetComponent<MeshRenderer>();
+    }
+
+    protected void Start()
+    {
         GenerateMesh();
     }
 
     protected void Update()
     {
+#if UNITY_EDITOR
+        var resolution = new Vector2(Screen.width, Screen.height);
+        if (_resolution != resolution)
+        {
+            _resolution = resolution;
+            GenerateMesh();
+        }
+#endif //UNITY_EDITOR
+
         UpdateMesh();
 
         if (_snapTarget)
@@ -69,11 +97,16 @@ public class Water : MonoBehaviour
 
         foreach (int i in _surfaceIndices)
         {
-            var x = vertices[i].x;
-            vertices[i].y = GetYVertexPositionByX(x);
+            vertices[i].y = GetY(vertices[i].x);
         }
 
         _mesh.vertices = vertices;
+
+        if (_movingMaterial)
+        {
+            var textureOffset = new Vector2(1.0f / _steps * _stepCounter, 0);
+            _meshRenderer.material.mainTextureOffset = textureOffset;
+        }
 
         if (_stepCounter == _steps)
         {
@@ -86,11 +119,11 @@ public class Water : MonoBehaviour
         var targetTransform = _snapTarget.transform;
         var targetPosition = targetTransform.position;
         targetPosition.x = _left + _width * _snapPosition;
-        targetPosition.y = GetYVertexPositionByX(targetPosition.x) + transform.position.y;
+        targetPosition.y = GetY(targetPosition.x) + transform.position.y + _yOffset;
         targetTransform.position = targetPosition;
     }
 
-    protected float GetYVertexPositionByX(float x)
+    protected float GetY(float x)
     {
         return Mathf.Cos((x + _step * _stepCounter) * _waveFrequency) * _waveHeight;
     }
@@ -113,15 +146,16 @@ public class Water : MonoBehaviour
         {
             var x = _left + _width * i / polygonsCount;
             var y = Mathf.Cos(x * _waveFrequency) * _waveHeight;
-            positions[i] = new Vector3(x, y, transform.position.z);
+            positions[i] = new Vector3(x, y, 0);
         }
 
         Vector3[] vertices = new Vector3[polygonsCount * 4];
         Vector2[] uvs = new Vector2[polygonsCount * 4];
         int[] triangles = new int[polygonsCount * 6];
 
-        _surfaceIndices = new List<int>();
-        _bottomIndices = new List<int>();
+        _mesh.Clear();
+        _surfaceIndices.Clear();
+        _bottomIndices.Clear();
 
         for (int i = 0, vi = 0, ti = 0; i < polygonsCount; i++, vi += 4, ti += 6)
         {
@@ -151,6 +185,5 @@ public class Water : MonoBehaviour
         _mesh.vertices = vertices;
         _mesh.uv = uvs;
         _mesh.triangles = triangles;
-        _mesh.name = "Water";
     }
 }
