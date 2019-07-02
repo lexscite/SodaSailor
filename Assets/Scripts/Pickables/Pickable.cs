@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SodaSailor
@@ -7,6 +6,8 @@ namespace SodaSailor
     public abstract class Pickable : TouchableObject
     {
         protected PlayerManager _playerManager;
+
+        protected Transform _transform;
 
         protected override void OnTouch()
         {
@@ -16,14 +17,15 @@ namespace SodaSailor
         protected override void Awake()
         {
             base.Awake();
+            _transform = transform;
             _playerManager = GameObject.Find("PlayerManager").GetComponent<PlayerManager>();
         }
 
         protected virtual void Update()
         {
-            transform.Translate(-1f * Time.deltaTime, 0, 0);
+            _transform.Translate(-1f * Time.deltaTime, 0, 0);
 
-            if (transform.position.x < -3f)
+            if (_transform.position.x < -3f)
             {
                 Destroy(gameObject);
             }
@@ -49,7 +51,7 @@ namespace SodaSailor
             {
                 time += Time.deltaTime;
                 ratio = time / duration;
-                transform.localScale = Vector3.Lerp(start, end, ratio);
+                _transform.localScale = Vector3.Lerp(start, end, ratio);
                 yield return null;
             }
 

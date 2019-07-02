@@ -5,10 +5,18 @@ namespace SodaSailor
 {
     public class SailScreen : GameScreen
     {
+        private enum SailScreenState
+        {
+            Sail = 0,
+            Battle = 1,
+        }
+
         [SerializeField]
         protected Text _goldCounterText;
         [SerializeField]
         protected Image _goldCointerIcon;
+        [SerializeField]
+        protected Text _healthText;
         [SerializeField]
         protected PickablesSpawner _pickablesSpawner;
         [SerializeField]
@@ -16,9 +24,15 @@ namespace SodaSailor
         [SerializeField]
         protected Button _switchStateButton;
         [SerializeField]
+        protected Button _fireButton;
+        [SerializeField]
         protected EnemyShip _enemyShip;
 
+        private SailScreenState _currentState = SailScreenState.Sail;
+
         private PlayerManager _playerManager;
+        private PlayerShip _playerShip;
+
         private DailyRewardPickable _currentAliveDailyRewardPickable;
 
         public Image GoldCounterIcon
@@ -30,6 +44,7 @@ namespace SodaSailor
         {
             base.Awake();
             _playerManager = GameObject.Find("PlayerManager").GetComponent<PlayerManager>();
+            _playerShip = _playerManager.Ship;
         }
 
         private void Start()
@@ -40,23 +55,44 @@ namespace SodaSailor
         private void OnEnable()
         {
             RefreshGoldCounter();
+            RefreshHealth();
+
             _playerManager.OnGoldValueChanged += RefreshGoldCounter;
             _playerManager.OnDailyRewardReceived += StopDailyRewardSpawning;
-            _switchStateButton.onClick.AddListener(SwitchToBattleState);
+            _playerShip.OnHealthValueChanged += RefreshHealth;
+            _switchStateButton.onClick.AddListener(SwitchState);
+            _fireButton.onClick.AddListener(_playerManager.Ship.Fire);
         }
 
         private void OnDisable()
         {
             _playerManager.OnGoldValueChanged -= RefreshGoldCounter;
             _playerManager.OnDailyRewardReceived -= StopDailyRewardSpawning;
-            _switchStateButton.onClick.RemoveListener(SwitchToBattleState);
+            _playerShip.OnHealthValueChanged -= RefreshHealth;
+            _switchStateButton.onClick.RemoveListener(SwitchState);
+            _fireButton.onClick.RemoveListener(_playerManager.Ship.Fire);
         }
 
-        private void SwitchToBattleState()
+        private void SwitchState()
         {
-            _enemyShip.ShowUp();
-            StopDailyRewardSpawning();
-            _currentAliveDailyRewardPickable?.Vanish();
+            if (_currentState == SailScreenState.Sail)
+            {
+                _enemyShip.ShowUp();
+                StopDailyRewardSpawning();
+                _currentAliveDailyRewardPickable?.Vanish();
+                _currentState = SailScreenState.Battle;
+            }
+            else
+            {
+                _enemyShip.Hide();
+                InvokeRepeating(nameof(SpawnDailyRewardPickable), 2, 2);
+                _currentState = SailScreenState.Sail;
+            }
+        }
+
+        private void RefreshHealth()
+        {
+            _healthText.text = _playerShip.Health.ToString();
         }
 
         private void RefreshGoldCounter()

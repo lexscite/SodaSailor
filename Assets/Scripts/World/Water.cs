@@ -26,6 +26,10 @@ namespace SodaSailor
         [SerializeField]
         protected bool _movingMaterial;
 
+        public float WaveFrequency { get; set; }
+        public float WaveHeight { get; set; }
+        public float Steps { get; set; }
+
         [Header("Snapping")]
         [SerializeField]
         protected GameObject _snapTarget;

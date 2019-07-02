@@ -6,15 +6,15 @@ namespace SodaSailor
     [RequireComponent(typeof(Camera))]
     public class CameraResizer : MonoBehaviour
     {
-        [Header("Native parameters")]
         [SerializeField]
-        protected int _resolutionX = 1125;
+        protected int _width = 1125;
         [SerializeField]
-        protected int _resolutionY = 2436;
+        protected int _height = 2436;
+        [SerializeField]
+        protected float _size = 5;
 
         private Camera _camera;
 
-        private float _orthographicSize;
         private float _aspectRatio;
 
 #if UNITY_EDITOR
@@ -28,8 +28,7 @@ namespace SodaSailor
 #endif //UNITY_EDITOR
 
             _camera = GetComponent<Camera>();
-            _orthographicSize = 5;
-            _aspectRatio = _resolutionX < _resolutionY ? (float)_resolutionX / _resolutionY : (float)_resolutionY / _resolutionX;
+            _aspectRatio = _width < _height ? (float)_width / _height : (float)_height / _width;
 
             Resize();
         }
@@ -49,7 +48,7 @@ namespace SodaSailor
         private void Resize()
         {
             var aspectRatio = (float)Screen.width / Screen.height;
-            var size = _orthographicSize / (aspectRatio / _aspectRatio);
+            var size = _size / (aspectRatio / _aspectRatio);
 
             _camera.orthographicSize = size;
         }

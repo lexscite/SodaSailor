@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SodaSailor
 {
@@ -10,13 +8,11 @@ namespace SodaSailor
         protected ParticleSystem _particleSystemPrefab;
 
         private GameScreensManager _gameScreensManager;
-        private Transform _transform;
         private Transform _targetTranform;
 
         protected override void Awake()
         {
             base.Awake();
-            _transform = transform;
             _gameScreensManager = GameObject.Find("GameScreensManager").GetComponent<GameScreensManager>();
             _targetTranform = (_gameScreensManager.GetScreenById("SailScreen") as SailScreen).GoldCounterIcon.transform;
         }
