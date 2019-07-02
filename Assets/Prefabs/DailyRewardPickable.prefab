@@ -106,5 +106,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5743a82ce6c4451bb51dc2be459eebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pickParticleSystem: {fileID: 3844313822748674165, guid: bfedf86e2daa34e499390e53c777a699,
+  _particleSystemPrefab: {fileID: 3844313822748674165, guid: bfedf86e2daa34e499390e53c777a699,
     type: 3}

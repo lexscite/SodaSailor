@@ -12,6 +12,7 @@ namespace SodaSailor
 
         private void Awake()
         {
+            _gameScreens.ForEach(screen => screen.gameObject.SetActive(true));
             _gameScreens.ForEach(screen => screen.gameObject.SetActive(false));
 			ShowScreen(_gameScreens[0]);
         }
@@ -28,5 +29,10 @@ namespace SodaSailor
 		{
 			ShowScreen(screen.Id);
 		}
+
+        public GameScreen GetScreenById(string id)
+        {
+            return _gameScreens.Find(a => a.Id == id);
+        }
     }
 }

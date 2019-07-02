@@ -8,6 +8,8 @@ namespace SodaSailor
         [SerializeField]
         protected Text _goldCounterText;
         [SerializeField]
+        protected Image _goldCointerIcon;
+        [SerializeField]
         protected PickablesSpawner _pickablesSpawner;
         [SerializeField]
         protected DailyRewardPickable _dailyRewardPickablePrefab;
@@ -19,6 +21,11 @@ namespace SodaSailor
         private PlayerManager _playerManager;
         private DailyRewardPickable _currentAliveDailyRewardPickable;
 
+        public Image GoldCounterIcon
+        {
+            get { return _goldCointerIcon; }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -27,7 +34,7 @@ namespace SodaSailor
 
         private void Start()
         {
-            InvokeRepeating(nameof(SpawnDailyRewardPickable), 5, 5);
+            InvokeRepeating(nameof(SpawnDailyRewardPickable), 2, 2);
         }
 
         private void OnEnable()

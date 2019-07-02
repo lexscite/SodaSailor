@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6979081408688145090}
   - component: {fileID: 3844313822748674165}
   - component: {fileID: 7730897332056133050}
+  - component: {fileID: 844435793615521639}
   m_Layer: 0
-  m_Name: DailyRewardPickParticleSystem
+  m_Name: DailyRewardParticleSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,15 +41,15 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2575692819696366099}
   serializedVersion: 6
-  lengthInSec: 0.2
-  simulationSpeed: 1
+  lengthInSec: 1
+  simulationSpeed: 1.5
   stopAction: 2
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -115,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 2
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -167,9 +168,9 @@ ParticleSystem:
         m_RotationOrder: 4
     startSpeed:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 1
-      minScalar: 5
+      minMaxState: 3
+      scalar: 3
+      minScalar: 2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -284,7 +285,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 0.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -600,7 +601,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 100
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -865,7 +866,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 10
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -971,7 +972,7 @@ ParticleSystem:
     m_BurstCount: 0
     m_Bursts: []
   SizeModule:
-    enabled: 0
+    enabled: 1
     curve:
       serializedVersion: 2
       minMaxState: 1
@@ -982,18 +983,27 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
+          value: 0.36486435
           inSlope: 0
-          outSlope: 1
+          outSlope: 0
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 1
+          time: 0.472166
           value: 1
+          inSlope: -0.0000004168943
+          outSlope: -0.0000004168943
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.5417349
+        - serializedVersion: 3
+          time: 1
+          value: 0.2297287
           inSlope: 1
-          outSlope: 0
+          outSlope: 1
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
@@ -1361,8 +1371,8 @@ ParticleSystem:
         m_NumAlphaKeys: 2
   UVModule:
     serializedVersion: 2
-    enabled: 0
-    mode: 0
+    enabled: 1
+    mode: 1
     timeMode: 0
     fps: 30
     frameOverTime:
@@ -1420,8 +1430,8 @@ ParticleSystem:
         m_RotationOrder: 4
     startFrame:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 0
+      minMaxState: 3
+      scalar: 0.9
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1476,11 +1486,30 @@ ParticleSystem:
     tilesY: 1
     animationType: 0
     rowIndex: 0
-    cycles: 1
+    cycles: 3
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 0}
+    - sprite: {fileID: -4896193794315736398, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 150145739408638069, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 2945765012853483603, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: -5394016121135325204, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: -8335129392240705503, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 6033073042145982083, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 5293928233272134005, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 963551374912525501, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 1902465587718770055, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
+    - sprite: {fileID: 7799891541371162936, guid: d214b240f0ea843fdb0cad8f30c4d8d0,
+        type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -2290,11 +2319,11 @@ ParticleSystem:
     randomizePerFrame: 0
   ExternalForcesModule:
     serializedVersion: 2
-    enabled: 1
+    enabled: 0
     multiplierCurve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4709,7 +4738,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 079bf2e90e00b40ff85b0a373cc91b3c, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4729,7 +4758,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -897872253
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 32767
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -4753,3 +4782,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &844435793615521639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2575692819696366099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60221b003af3d462bb5dcf02c6b44b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetTransform: {fileID: 0}
+  _treshold: 0.148
+  _pause: 0.451

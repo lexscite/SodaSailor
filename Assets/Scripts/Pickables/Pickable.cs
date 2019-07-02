@@ -21,7 +21,7 @@ namespace SodaSailor
 
         protected virtual void Update()
         {
-            transform.Translate(-.5f * Time.deltaTime, 0, 0);
+            transform.Translate(-1f * Time.deltaTime, 0, 0);
 
             if (transform.position.x < -3f)
             {
